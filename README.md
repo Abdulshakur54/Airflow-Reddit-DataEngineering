@@ -5,6 +5,7 @@
 #### The **Step Function** Orchestrate the workflow by running a **Glue Crawler** task to crawl the **S3 Objects**,  
 #### followed by a **Glue Job** that performs further transformation, followed by loading the data into ***Redshift**.  
 #### The step function concludes by running a **Glue Crawler Job** that crawls the Redshift Table 
+#### The Architecture Diagram can be found here ![Architecture Diagram](./Architecture%20Diagram.jpg)
 
 
 
