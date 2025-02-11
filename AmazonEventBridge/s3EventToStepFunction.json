@@ -1,0 +1,9 @@
+{
+    "source": ["aws.s3"],
+    "detail-type": ["Object Created"],
+    "detail": {
+      "bucket": {
+        "name": ["reddit-dataengineering-92198"]
+      }
+    }
+  }

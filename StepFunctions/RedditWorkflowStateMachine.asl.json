@@ -1,0 +1,81 @@
+{
+  "Comment": "This state machine orchestrate reddit etl workflow",
+  "StartAt": "Crawl Raw Reddit Files From S3",
+  "States": {
+    "Crawl Raw Reddit Files From S3": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "reddit-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "Next": "Get State From Crawl Raw Reddit Files From S3"
+    },
+    "Get State From Crawl Raw Reddit Files From S3": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "reddit-crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+      "Next": "Choice_1"
+    },
+    "Choice_1": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Condition": "{% $states.input.Crawler.State = 'STOPPING' %}",
+          "Next": "Start Glue ETL Job"
+        }
+      ],
+      "Default": "Wait_1"
+    },
+    "Start Glue ETL Job": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Arguments": {
+        "JobName": "Reddit-s3-to-redshift-etl"
+      },
+      "Next": "Redshift Crawler"
+    },
+    "Redshift Crawler": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "Redshift Crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "Next": "Get State From Redshift Crawler"
+    },
+    "Get State From Redshift Crawler": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "Redshift Crawler"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+      "Next": "Choice_2"
+    },
+    "Choice_2": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Next": "Success",
+          "Condition": "{% $states.input.Crawler.State = 'STOPPING' %}"
+        }
+      ],
+      "Default": "Wait _2"
+    },
+    "Wait _2": {
+      "Type": "Wait",
+      "Seconds": 10,
+      "Next": "Get State From Redshift Crawler"
+    },
+    "Success": {
+      "Type": "Succeed",
+      "Comment": "Reddit Workflow Executed Successfully"
+    },
+    "Wait_1": {
+      "Type": "Wait",
+      "Seconds": 10,
+      "Next": "Get State From Crawl Raw Reddit Files From S3"
+    }
+  },
+  "QueryLanguage": "JSONata"
+}
