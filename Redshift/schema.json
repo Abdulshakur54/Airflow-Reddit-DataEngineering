@@ -1,0 +1,10 @@
+{
+    "title": "TEXT",
+    "comment_limit": "INT",
+    "author_fullname": "TEST",
+    "clicked": "BOOLEAN",
+    "num_comments": "INT",
+    "score": "INT",
+    "meet_comment_criteria": "BOOLEAN",
+    "DATE": "STRING"
+}
